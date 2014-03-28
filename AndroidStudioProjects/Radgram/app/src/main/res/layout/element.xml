@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight">
+
+    <ImageView
+        android:id="@+id/icon_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/ic_launcher"
+        android:layout_alignParentBottom="true" />
+
+    <TextView
+        android:id="@+id/name_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/name_contact"
+        android:layout_alignTop="@+id/icon_contact"
+        android:layout_toRightOf="@+id/icon_contact"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/last_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/last_msg"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/icon_contact" />
+    <ImageView
+        android:id="@+id/is_sent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_sent"
+        android:layout_alignTop="@+id/waiting_to_send"
+        android:layout_alignBottom="@+id/waiting_to_send"
+        android:layout_toRightOf="@+id/is_received" />
+
+    //en src habrá que hacer un método que muestre una de las tres imágenes según el mensaje este o no enviado
+    <ImageView
+        android:id="@+id/is_received"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_received"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:id="@+id/waiting_to_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_waiting_to_send"
+        android:layout_alignTop="@+id/time_when_sent"
+        android:layout_above="@+id/last_message"
+        android:layout_toLeftOf="@+id/time_when_sent" />
+
+    <TextClock
+        android:id="@+id/time_when_sent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/name_contact"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+       />
+
+
+</RelativeLayout>

@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+ >
+
+    <item
+
+        android:id = "@+id/action_new_message"
+        android:orderInCategory="200"
+        android:icon="@drawable/ic_action_message"
+        app:showAsAction="always"
+        android:title="@string/action_message"/>
+    <item
+
+        android:id = "@+id/action_chats"
+        android:orderInCategory="200"
+        android:icon="@drawable/ic_launcher"
+        app:showAsAction="always"
+        android:title="@string/action_chats"/>
+
+</menu>
