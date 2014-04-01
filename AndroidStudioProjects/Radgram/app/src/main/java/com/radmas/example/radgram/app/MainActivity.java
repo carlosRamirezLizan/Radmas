@@ -7,43 +7,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 //import com.github.kevinsawicki.http.HttpRequest;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 
 
-public class MainActivity extends ActionBarActivity implements com.radmas.example.radgram.app.HttpRequest.NetworkListener {
-    public TextView outputText;
-    URI uri;
+
+public class MainActivity extends ActionBarActivity  {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try{uri = new URI("http://docs.couchdb.org/en/latest/intro/tour.html");
-        }catch(URISyntaxException e){
-
-        }
-        String requested = uri.toASCIIString();
-
-        //Create and make HTTP request
-        HttpRequest request = new HttpRequest();
-        request.setListener(this);
-        request.execute(requested);
     }
 
-    public void networkRequestCompleted(String result) {
-        if(result == null) {
-            return;
-        }
-
-        outputText = (TextView) findViewById(R.id.textView1);
-        outputText.setText(result);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

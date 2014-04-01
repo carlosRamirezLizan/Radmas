@@ -1,11 +1,11 @@
 package com.radmas.example.radgram.app;
-import android.os.AsyncTask;
 import java.lang.String;
+import android.os.AsyncTask;
 
 /**
- * Created by raddev01 on 31/03/2014.
+ * Created by raddev01 on 01/04/2014.
  */
-public class HttpRequest extends AsyncTask<String, Void, String> {
+public class HttpPost extends AsyncTask<String, Void, String> {
     public interface NetworkListener {
         void networkRequestCompleted(String result);
     }
@@ -18,8 +18,7 @@ public class HttpRequest extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... uri) {
-        Integer i =  com.github.kevinsawicki.http.HttpRequest.get(uri[0]).code();
-
+        Integer i = com.github.kevinsawicki.http.HttpRequest.post(uri[0]).send("name=kevin").code();
         return i.toString();
         /*if(i == 200 || i == 201 || i == 203){
             Gson gson = new Gson();
@@ -86,5 +85,3 @@ public class HttpRequest extends AsyncTask<String, Void, String> {
         }
     }*/
 }
-
-
