@@ -4,6 +4,7 @@
     <string name="app_name">Radgram</string>
     <string name="action_settings">Settings</string>
     <string name="action_chats">Chats</string>
+    <string name="action_telephone_number">Telephone number</string>
     <string name="action_search">Search</string>
     <string name="action_message">New Message</string>
     <string name="action_contacts">Contacts</string>

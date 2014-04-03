@@ -10,23 +10,24 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:src="@drawable/ic_launcher"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true" />
 
     <TextView
         android:id="@+id/name_contact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/name_contact"
-        android:layout_alignTop="@+id/icon_contact"
-        android:layout_toRightOf="@+id/icon_contact"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_alignTop="@+id/is_received"
+        android:layout_toRightOf="@+id/icon_contact" />
 
     <TextView
         android:id="@+id/last_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/last_msg"
-        android:layout_alignParentBottom="true"
+        android:layout_alignBottom="@+id/is_received"
         android:layout_toRightOf="@+id/icon_contact" />
     <ImageView
         android:id="@+id/is_sent"

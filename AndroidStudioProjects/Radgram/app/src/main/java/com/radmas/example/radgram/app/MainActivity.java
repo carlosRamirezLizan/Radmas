@@ -10,18 +10,30 @@ import android.view.MenuItem;
 
 //import com.github.kevinsawicki.http.HttpRequest;
 
-
-
-
-public class MainActivity extends ActionBarActivity  {
-
-
+public class MainActivity extends ActionBarActivity {
+    public String myPhone;
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent i = new Intent(this, MyTelephoneNumber.class);
+        startActivityForResult(i, 1);
+
     }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent i) {
+
+        if (requestCode == 1) {
+
+            if (resultCode == RESULT_OK) {
+                myPhone = i.getStringExtra("result");
+            }
+            if (resultCode == RESULT_CANCELED) {
+                myPhone=null;
+            }
+        }
+    }//onActivityResult
 
 
     @Override
@@ -32,8 +44,6 @@ public class MainActivity extends ActionBarActivity  {
         inflater.inflate(R.menu.main, menu);
         return true; /** true -> el menú ya está visible */
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -55,6 +65,7 @@ public class MainActivity extends ActionBarActivity  {
     public void launchContacts (){
 
         Intent i = new Intent (this, Contacts.class);
+//        i.putExtra("myPhone",myPhone);
         startActivity(i);
     }
 
@@ -62,5 +73,4 @@ public class MainActivity extends ActionBarActivity  {
         Intent i = new Intent (this, SettingsActivity.class);
         startActivity(i);
     }
-
 }

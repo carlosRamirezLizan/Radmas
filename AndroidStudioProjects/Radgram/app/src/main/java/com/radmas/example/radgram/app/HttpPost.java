@@ -1,6 +1,9 @@
 package com.radmas.example.radgram.app;
 import java.lang.String;
 import android.os.AsyncTask;
+import com.github.kevinsawicki.http.HttpRequest;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by raddev01 on 01/04/2014.
@@ -9,8 +12,27 @@ public class HttpPost extends AsyncTask<String, Void, String> {
     public interface NetworkListener {
         void networkRequestCompleted(String result);
     }
-
+    String userPhone;
     private NetworkListener _listener;
+    String message;
+    String contactPhone;
+    String resultResponse;
+
+    public void setResultResponse(String resultResponse){
+        this.resultResponse=resultResponse;
+    }
+
+    public void setUserPhone(String userPhone){
+        this.userPhone=userPhone;
+    }
+
+    public void setContactPhone(String contactPhone){
+        this.contactPhone=contactPhone;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     public void setListener(NetworkListener listener) {
         _listener = listener;
@@ -18,42 +40,25 @@ public class HttpPost extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... uri) {
-        Integer i = com.github.kevinsawicki.http.HttpRequest.post(uri[0]).send("name=kevin").code();
-        return i.toString();
-        /*if(i == 200 || i == 201 || i == 203){
-            Gson gson = new Gson();
-            gson.toJson()
-        }else{
+        JSONObject json = new JSONObject();
 
+        try {
+            json.put("user_Telephone", this.userPhone);
+            json.put("contact_Telephone", this.contactPhone);
+            json.put("message",this.message);
+        }catch (JSONException e){}
+
+
+        String last_rev = "28-6f868561c9776c65238b18b885139dfc";
+        if(resultResponse!=null){
+            last_rev = resultResponse;
         }
-                .body();
 
-                */
-//
-//
-//
-//        HttpClient httpclient = new DefaultHttpClient();
-//        HttpResponse response;
-//        String responseString = null;
-//        try {
-//            response = httpclient.execute(new HttpGet(uri[0]));
-//            StatusLine statusLine = response.getStatusLine();
-//            if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-//                ByteArrayOutputStream out = new ByteArrayOutputStream();
-//                response.getEntity().writeTo(out);
-//                out.close();
-//                responseString = out.toString();
-//            } else {
-//                //Closes the connection.
-//                response.getEntity().getContent().close();
-//                throw new IOException(statusLine.getReasonPhrase());
-//            }
-//        } catch (ClientProtocolException e) {
-//            Log.d("debug:", "failed: " + e.getMessage());
-//        } catch (IOException e) {
-//            Log.d("debug:", "failed: " + e.getMessage());
-//        }
-//        return responseString;
+        return  HttpRequest.put("http://192.168.1.12:5984/albums/19640b3ad1fda6c9863575c751063369?rev="+last_rev)
+                .header("referer", "http://192.168.1.12:5984/albums/19640b3ad1fda6c9863575c751063369?rev="+last_rev)
+                .contentType("application/json")
+                .followRedirects(true)
+                .send(json.toString()).body();
     }
 
     @Override
@@ -64,24 +69,4 @@ public class HttpPost extends AsyncTask<String, Void, String> {
         }
     }
 
-   /* public String post(String posturl) {
-
-        try {
-
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost(posturl);
-            List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
-            nameValuePair.add(new BasicNameValuePair("email", "user@gmail.com"));
-            nameValuePair.add(new BasicNameValuePair("message", "Hi, trying Android HTTP post!"));
-
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePair));
-            HttpResponse resp = httpclient.execute(httppost);
-            HttpEntity ent = resp.getEntity();/*y obtenemos una respuesta
-            String text = EntityUtils.toString(ent);
-            return text;
-
-        } catch (Exception e) {
-            return "error";
-        }
-    }*/
 }

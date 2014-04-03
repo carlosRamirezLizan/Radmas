@@ -29,6 +29,10 @@
             android:parentActivityName="com.radmas.example.radgram.app.MainActivity"
             android:label="@string/action_chat" >
         </activity>
+        <activity
+            android:name="com.radmas.example.radgram.app.MyTelephoneNumber"
+            android:label="@string/action_telephone_number" >
+        </activity>
 
         <activity android:name="com.radmas.example.radgram.app.SearchableActivity" >
             <intent-filter>
@@ -50,8 +54,8 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" >
     </uses-permission>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
 
 </manifest>

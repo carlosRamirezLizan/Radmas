@@ -1,7 +1,6 @@
 package com.radmas.example.radgram.app;
 
-import android.app.Activity;
-import android.app.AlertDialog;
+
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -14,10 +13,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -25,41 +24,42 @@ import android.widget.Toast;
  * Created by raddev01 on 19/03/14.
  */
 public class Contacts extends ListActivity {
-    //public TextView outputText;
     public MyAdapter adapter;
-    private String[] nombres;
+    private String[][] nombres;
     private String[] telefonos;
     private int[] imagenes;
     private int sizeCount;
+    private String myPhone="0";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ///nombres= new String[sizeCount];
-        ///telefonos =new String[sizeCount];
-        ///imagenes = new int[sizeCount];
         fetchContacts();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contacts);
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        ///nombres[0]="Carlos";
-        ///nombres[1]="Juan";
-        ///telefonos[0]="639915743";
-        ///telefonos[1]="623392236";
         imagenes[0]=R.drawable.ic_sent;
         imagenes[1]=R.drawable.ic_sent;
         adapter = new MyAdapter(this,nombres,telefonos,imagenes);
-        //outputText = (TextView) findViewById(R.id.textView1);
-        //fetchContacts();
-
+//        Bundle extras = this.getIntent().getExtras();
+//        myPhone= extras.get("myPhone").toString();
         setListAdapter(adapter);
 
         ListView listView = getListView();
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> av, View view, int i, long l) {
-             //Toast.makeText(getApplicationContext(), "myPos " + i, Toast.LENGTH_LONG).show();
+                String selected = ((TextView) view.findViewById(R.id.nombre)).getText().toString();
+                String telephone_selected = ((TextView) view.findViewById(R.id.telefono)).getText().toString();
+                Toast toast=Toast.makeText(getApplicationContext(), selected+telephone_selected, Toast.LENGTH_SHORT);
+                toast.show();
              Intent intent = new Intent(getApplicationContext(), Chat.class);
-             startActivity(intent);
+             intent.putExtra("user",selected);
+             intent.putExtra("telephone",telephone_selected);
+             intent.putExtra("myPhone",myPhone);
+                startActivity(intent);
+
             }
         });
     }
@@ -113,11 +113,10 @@ public class Contacts extends ListActivity {
         ContentResolver contentResolver = getContentResolver();
         Cursor cursor = contentResolver.query(CONTENT_URI, null,null, null, null);
         sizeCount=cursor.getCount();
-        nombres= new String[sizeCount];
+        nombres= new String[sizeCount][sizeCount];
         telefonos =new String[sizeCount];
         imagenes = new int[sizeCount];
         int j = 0;
-        int k=0;
         //StringBuffer output= new StringBuffer();
         // Loop for every contact in the phone
         if (cursor.getCount() > 0) {
@@ -127,21 +126,17 @@ public class Contacts extends ListActivity {
                 int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex( HAS_PHONE_NUMBER )));
                 if (hasPhoneNumber > 0) {
                     ///output.append("\n First Name:" + name);
-                    nombres[j]=name;
+                    nombres[j][0]=name;
                     j++;
                     // Query and loop for every phone number of the contact
                     Cursor phoneCursor = contentResolver.query(PhoneCONTENT_URI, null, Phone_CONTACT_ID + " = ?", new String[] { contact_id }, null);
                     while (phoneCursor.moveToNext()) {
                         phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(NUMBER));
-                        telefonos[k]=phoneNumber;
-                        k++;
-                       ///output.append("\n Phone number:" + phoneNumber);
+                            nombres[j-1][1] = phoneNumber;
                     }
                     phoneCursor.close();
                 }
-                ///output.append("\n");
             }
-            ///outputText.setText(output);
         }
     }
 }
