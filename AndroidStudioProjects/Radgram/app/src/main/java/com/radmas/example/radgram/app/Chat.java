@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,16 +15,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import com.github.kevinsawicki.http.HttpRequest;
-import com.google.gson.Gson;
+import android.widget.Toast;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.greenrobot.event.EventBus;
 
@@ -35,26 +36,25 @@ import de.greenrobot.event.EventBus;
 public class Chat extends ActionBarActivity implements com.radmas.example.radgram.app.HttpPost.NetworkListener, com.radmas.example.radgram.app.HttpRequest.NetworkListener{
 
     public TextView outputText;
-    public String[] resultados=new String[2];
-    public int i=0;
+//    public int count=0;
     private EditText messageText;
     private TextView messageHistoryText;
     private Button sendMessageButton;
 
+    TimerTask doAsynchronousTask;
+    final Handler handler = new Handler();
+    Timer timer = new Timer();
+
     URI uri;
     URI uri2;
     TextView tvIsConnected;
-    private String contactName="0";
+    private String contactName;
     private String telephoneContact="0";
     private String myPhone;
     private String rev;
-    private ArrayList<Message> arrayMessages= new ArrayList <Message> ();
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
+    private Database database;
+    private ArrayList<Message> arrayMessagesAll= new ArrayList <Message> ();
+    private ArrayList<Message> arrayMessagesThisChat =new ArrayList <Message> ();
 
     @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +65,9 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
             Bundle extras = this.getIntent().getExtras();
             contactName = extras.getString("user");
             telephoneContact = extras.getString("telephone");
+            myPhone = extras.getString("myPhone");
+
+            database = new Database(myPhone,telephoneContact,myPhone+"_"+telephoneContact);
 
             messageHistoryText = (TextView) findViewById(R.id.messageHistory);
             messageText = (EditText) findViewById(R.id.message);
@@ -72,7 +75,7 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
             sendMessageButton = (Button) findViewById(R.id.sendMessageButton);
             setTitle("Messaging with " + contactName);
 
-        // check if you are connected or not
+            // check if you are connected or not
             if(isConnected()){
                 tvIsConnected.setText("Online");
             }
@@ -82,100 +85,119 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
             ActionBar actionBar = getActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-
-//Http request to know the rev value
-
-            try{uri = new URI("http://192.168.1.12:5984/albums/19640b3ad1fda6c9863575c751063369");
-            //try{uri = new URI("http://localhost:5984/_utils/document.html?albums/19640b3ad1fda6c9863575c751063369");
-            }catch(URISyntaxException e){
+            //http post para crear el documento en base de datos en caso de que no exista
+            try {
+                uri2 = new URI("http://192.168.1.12:5984/albums/"+database.getDatabaseId());
+            } catch (URISyntaxException e) {
 
             }
+            String toPost = uri2.toASCIIString();
+            com.radmas.example.radgram.app.HttpPost request2 = new com.radmas.example.radgram.app.HttpPost();
+            request2.setDatabase(database);
+            request2.setPostToCreateDatabase(true);
+            request2.setListener(this);
+            request2.execute(toPost);
 
-            //http request
-
-            String requested = uri.toASCIIString();
-            com.radmas.example.radgram.app.HttpRequest request = new com.radmas.example.radgram.app.HttpRequest();
-            request.setListener(this);
-            request.execute(requested);
-
+            //Periodic http request to know the rev value
+            doAsynchronousTask =  new TimerTask() {
+                @Override
+                public void run() {
+                    handler.post(new Runnable() {
+                        public void run() {
+                            refresh();
+                            Log.w("Radgram", "Refreshing");
+                            Log.w("List Messages",arrayMessagesAll.toString());
+                        }
+                    });
+                }
+            };timer.schedule(doAsynchronousTask, 0, 10000); //refresh every 10 seconds
     }
 
-    public void onEvent(MyPhone ev) {
-            myPhone = ev.phoneNumber;
-    }
-
-
-    public void onEvent(Conversation ev) {
-        for(Message message: ev.conversation){
-            SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
-            String date = sdf.format(message.getTimeSent());
-            messageHistoryText.append(message.getUserTelephone()+" said: " + message.getText() + " at time: " + date+ "\n");
-        }
-    }
-
-    public ArrayList<Message> getArrayMessages(){
-        return arrayMessages;
-    }
-
-    public void setArrayMessages(ArrayList<Message> arrayMessages) {
-        this.arrayMessages = arrayMessages;
-    }
-
-    public void sePulsa(View view){
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat df2 = new SimpleDateFormat("HH:mm:ss");
-        String formattedDate2 = df2.format(c.getTime());
-
-        //construir el mensaje con usuario y hora y display
-
-        //messageHistoryText.append(formattedDate2 + ":\n " + "Yo" + ": " + messageText.getText() + "\n");
-        try{uri = new URI("http://192.168.1.12:5984/albums/19640b3ad1fda6c9863575c751063369");
-            //try{uri = new URI("http://localhost:5984/_utils/document.html?albums/19640b3ad1fda6c9863575c751063369");
+    public void refresh (){
+        try{uri = new URI("http://192.168.1.12:5984/albums/"+database.getDatabaseId());
         }catch(URISyntaxException e){
 
         }
-
-        try{uri2 = new URI("http://192.168.1.12:5984/albums/19640b3ad1fda6c9863575c751063369");
-            //try{uri = new URI("http://localhost:5984/_utils/document.html?albums/19640b3ad1fda6c9863575c751063369");
-        }catch(URISyntaxException e){
-
-        }
-
         //http request
-
-/*
-            String requested = uri.toASCIIString();
-            com.radmas.example.radgram.app.HttpRequest request = new com.radmas.example.radgram.app.HttpRequest();
-            request.setListener(this);
-            request.execute(requested);
-*/
-        //http post
-
-        String toPost = uri2.toASCIIString();
-        com.radmas.example.radgram.app.HttpPost request2 = new com.radmas.example.radgram.app.HttpPost();
-        long unixTime = System.currentTimeMillis();
-        Message message = new Message(messageText.getText().toString(),unixTime,myPhone);
-        arrayMessages.add(i,message);
-        i++;
-        Conversation conversation = new Conversation();
-        conversation.setConversation(arrayMessages);
-        conversation.setMy_phone(myPhone);
-        conversation.setFirend_phone(telephoneContact);
-        request2.setResultResponse(this.rev);
-
-//      request2.setMessage(message);
-        request2.setConversation(conversation);
-
-        request2.setListener(this);
-        request2.execute(toPost);
-
-        //http request
-
         String requested = uri.toASCIIString();
         com.radmas.example.radgram.app.HttpRequest request = new com.radmas.example.radgram.app.HttpRequest();
         request.setListener(this);
         request.execute(requested);
+    }
 
+//    public void onEventMainThread(MyPhone ev) {
+//            myPhone = ev.getPhoneNumber();
+//    }
+
+    public void onEventMainThread(Conversation ev) {
+//      setArrayMessagesThisChat(ev.conversation);
+//      count = arrayMessagesAll.size();
+        try {
+            if (ev.getFirend_phone().equals(telephoneContact) && ev.getMy_phone().equals(myPhone)) {
+                messageHistoryText.setText("");
+                for (Message message : ev.conversation) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
+                    String date = sdf.format(message.getTimeSent());
+                    //comparar tiempos
+                    messageHistoryText.append(message.getUserTelephone() + " said: " + message.getText() + " at time: " + date + "\n");
+                }
+            }
+        }catch (Exception e){
+
+        }
+    }
+
+    public void sePulsa(View view) {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df2 = new SimpleDateFormat("HH:mm:ss");
+        String formattedDate2 = df2.format(c.getTime());
+
+        try {
+            uri = new URI("http://192.168.1.12:5984/albums/"+database.getDatabaseId());
+        } catch (URISyntaxException e) {
+
+        }
+
+        try {
+            uri2 = new URI("http://192.168.1.12:5984/albums/"+database.getDatabaseId());
+        } catch (URISyntaxException e) {
+
+        }
+        //http post
+        String toPost = uri2.toASCIIString();
+        com.radmas.example.radgram.app.HttpPost request2 = new com.radmas.example.radgram.app.HttpPost();
+        long unixTime = System.currentTimeMillis();
+        if (messageText.getText().length() != 0) {
+            Message message = new Message(messageText.getText().toString(), unixTime, myPhone);
+
+//          arrayMessagesAll.add(count, message);
+//            count++;
+            messageText.setText("");
+            Conversation conversation = new Conversation();
+            arrayMessagesAll.add(message);
+            arrayMessagesThisChat.clear();
+            for(Message mess: arrayMessagesAll){
+                if(mess.getUserTelephone().equals(myPhone)){
+                    arrayMessagesThisChat.add(mess);
+                }
+            }
+            conversation.setConversation(arrayMessagesThisChat);
+            conversation.setMy_phone(myPhone);
+            conversation.setFirend_phone(telephoneContact);
+            request2.setResultResponse(this.rev);
+            request2.setConversation(conversation);
+            request2.setDatabase(database);
+            request2.setListener(this);
+            request2.execute(toPost);
+
+            //http request
+            String requested = uri.toASCIIString();
+            com.radmas.example.radgram.app.HttpRequest request = new com.radmas.example.radgram.app.HttpRequest();
+            request.setListener(this);
+            request.execute(requested);
+        } else {
+            Toast.makeText(this, "Introduce un texto", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public boolean isConnected(){
@@ -194,10 +216,6 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
        rev= result;
        outputText = (TextView) findViewById(R.id.result_network);
        outputText.setText(rev);
-      /* Gson gson = new Gson();
-       Conversation conversation = gson.fromJson(result, Conversation.class);
-       outputText.setText(conversation.toString());
-       */
 
     }
 
@@ -227,14 +245,32 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
             }
         }
 
-        public void launchContacts (){
+        public ArrayList<Message> getArrayMessagesAll(){
+            return arrayMessagesAll;
+        }
+
+        public void setArrayMessagesAll(ArrayList<Message> arrayMessages) {
+            this.arrayMessagesAll = arrayMessages;
+        }
+
+    public void setArrayMessagesThisChat(ArrayList<Message> arrayMessagesThisChat) {
+        this.arrayMessagesThisChat = arrayMessagesThisChat;
+    }
+
+    public void launchContacts (){
 
             Intent i = new Intent (this, Contacts.class);
             startActivity(i);
         }
 
         public void launchActivitySettings (){
-            Intent i = new Intent (this, SettingsActivity.class);
+            Intent i = new Intent (this, MisPreferencias.class);
             startActivity(i);
+        }
+
+        @Override
+        protected void onDestroy() {
+            super.onDestroy();
+            EventBus.getDefault().unregister(this);
         }
 }

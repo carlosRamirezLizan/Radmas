@@ -4,25 +4,25 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.radmas.example.radgram.app.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.radmas.example.radgram.app.MisPreferencias$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
     <header
-        android:fragment="com.radmas.example.radgram.app.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.radmas.example.radgram.app.MisPreferencias$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" />
     <header
-        android:fragment="com.radmas.example.radgram.app.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.radmas.example.radgram.app.MisPreferencias$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" />
 
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.radmas.example.radgram.app.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.radmas.example.radgram.app.MisPreferencias$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
     <header
-        android:fragment="com.radmas.example.radgram.app.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.radmas.example.radgram.app.MisPreferencias$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" />
     <header
-        android:fragment="com.radmas.example.radgram.app.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.radmas.example.radgram.app.MisPreferencias$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" />
 
 </preference-headers>

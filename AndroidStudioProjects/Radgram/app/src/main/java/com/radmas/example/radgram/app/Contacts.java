@@ -29,7 +29,7 @@ public class Contacts extends ListActivity {
     private String[] telefonos;
     private int[] imagenes;
     private int sizeCount;
-    private String myPhone="0";
+    private String myPhone;
 
 
     @Override
@@ -42,8 +42,8 @@ public class Contacts extends ListActivity {
         imagenes[0]=R.drawable.ic_sent;
         imagenes[1]=R.drawable.ic_sent;
         adapter = new MyAdapter(this,nombres,telefonos,imagenes);
-//        Bundle extras = this.getIntent().getExtras();
-//        myPhone= extras.get("myPhone").toString();
+        Bundle extras = this.getIntent().getExtras();
+        myPhone= extras.getString("myPhone");
         setListAdapter(adapter);
 
         ListView listView = getListView();
@@ -54,12 +54,11 @@ public class Contacts extends ListActivity {
                 String telephone_selected = ((TextView) view.findViewById(R.id.telefono)).getText().toString();
                 Toast toast=Toast.makeText(getApplicationContext(), selected+telephone_selected, Toast.LENGTH_SHORT);
                 toast.show();
-             Intent intent = new Intent(getApplicationContext(), Chat.class);
-             intent.putExtra("user",selected);
-             intent.putExtra("telephone",telephone_selected);
-             intent.putExtra("myPhone",myPhone);
+                Intent intent = new Intent(getApplicationContext(), Chat.class);
+                intent.putExtra("user",selected);
+                intent.putExtra("telephone",telephone_selected);
+                intent.putExtra("myPhone",myPhone);
                 startActivity(intent);
-
             }
         });
     }
@@ -73,7 +72,7 @@ public class Contacts extends ListActivity {
     }
 
     public void launchSettings (){
-        Intent i = new Intent (this, SettingsActivity.class);
+        Intent i = new Intent (this, MisPreferencias.class);
         startActivity(i);
     }
     public void launchChats(){

@@ -45,7 +45,7 @@
         </activity>
         <activity
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:name="com.radmas.example.radgram.app.SettingsActivity"
+            android:name=".MisPreferencias"
             android:parentActivityName="com.radmas.example.radgram.app.MainActivity"
             android:label="@string/title_activity_settings" >
         </activity>

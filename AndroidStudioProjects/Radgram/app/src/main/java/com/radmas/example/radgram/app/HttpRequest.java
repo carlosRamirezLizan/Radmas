@@ -3,11 +3,7 @@ import android.os.AsyncTask;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import org.apache.http.HttpResponse;
-
 import java.lang.String;
-
 import de.greenrobot.event.EventBus;
 
 /**
@@ -31,7 +27,7 @@ public class HttpRequest extends AsyncTask<String, Void, String> {
         String no_valid = "Error al recibir la información";
         if (code == 200 ) {
             Gson gson = new GsonBuilder().create();
-            Conversation response = (Conversation) gson.fromJson(json, Conversation.class);
+            Conversation response = gson.fromJson(json, Conversation.class);
             EventBus.getDefault().post(response);
             return response._rev;
         } else {

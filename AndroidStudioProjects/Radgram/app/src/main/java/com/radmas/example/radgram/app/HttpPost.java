@@ -4,9 +4,6 @@ import android.os.AsyncTask;
 import com.github.kevinsawicki.http.HttpRequest;
 import com.google.gson.Gson;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * Created by raddev01 on 01/04/2014.
  */
@@ -21,6 +18,8 @@ public class HttpPost extends AsyncTask<String, Void, String> {
     Conversation conversation;
     private String contactPhone;
     private String userPhone;
+    private Database database;
+    private boolean postToCreateDatabase;
 
     public void setMessage(Message message) {
         this.message = message;
@@ -32,10 +31,19 @@ public class HttpPost extends AsyncTask<String, Void, String> {
 
     public void setResultResponse(String resultResponse){
         this.resultResponse = resultResponse;
-
     }
 
+    public void setPostToCreateDatabase(boolean postToCreateDatabase) {
+        this.postToCreateDatabase = postToCreateDatabase;
+    }
 
+    public boolean isPostToCreateDatabase() {
+        return postToCreateDatabase;
+    }
+
+    public void setDatabase(Database database) {
+        this.database = database;
+    }
 
     public void setUserPhone(String userPhone) {
         this.userPhone = userPhone;
@@ -59,18 +67,25 @@ public class HttpPost extends AsyncTask<String, Void, String> {
             json.put("contact_Telephone", this.contactPhone);
             json.put("conversation",this.conversation);
         }catch (JSONException e){}
-*/
+        */
 
-        String last_rev = "32-11d13c12cf3a9d00de9a2bfa96ee3ad0";
+        String last_rev = "1-db63d5463bf4d3064280690e18585786";
         if(resultResponse!=null){
             last_rev = resultResponse;
         }
 
-        return  HttpRequest.put("http://192.168.1.12:5984/albums/19640b3ad1fda6c9863575c751063369?rev="+last_rev)
-                .header("referer", "http://192.168.1.12:5984/albums/19640b3ad1fda6c9863575c751063369?rev="+last_rev)
-                .contentType("application/json")
-                .followRedirects(true)
-                .send(json).body();
+        if(!isPostToCreateDatabase()) {
+            return HttpRequest.put("http://192.168.1.12:5984/albums/" + database.getDatabaseId()+"?rev="+last_rev)
+                    .header("referer", "http://192.168.1.12:5984/albums/" + database.getDatabaseId()+"?rev="+last_rev)
+                    .contentType("application/json")
+                    .followRedirects(true)
+                    .send(json).body();
+        }
+        else{ //we need to create the database
+            return HttpRequest.put("http://192.168.1.12:5984/albums/"+database.getDatabaseId()+"/1.0")
+                    .header("referer", "http://192.168.1.12:5984/albums/" + database.getDatabaseId()+"/1.0")
+                    .body();
+        }
     }
 
     @Override
@@ -80,5 +95,4 @@ public class HttpPost extends AsyncTask<String, Void, String> {
             _listener.networkRequestCompleted(result);
         }
     }
-
 }
