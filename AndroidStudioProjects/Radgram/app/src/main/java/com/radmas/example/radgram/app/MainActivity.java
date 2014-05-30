@@ -8,18 +8,45 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class MainActivity extends ActionBarActivity {
     public String myPhone="0"; //not initialized
     private final static int PHONE = 1;
-    private final static String DEFAULT_PHONE_VALUE ="valorpordefecto";
+    public final static String DEFAULT_PHONE_VALUE ="valorpordefecto";
+    public TextView noChats;
+    public ListView list;
+    public RecentChats recentChats = new RecentChats();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
-        myPhone = pref.getString("userPhone",DEFAULT_PHONE_VALUE);
+        myPhone = pref.getString("userPhone", DEFAULT_PHONE_VALUE);
+        String json = pref.getString("Recent Chats", "");
+        Gson gson = new Gson();
+        recentChats = gson.fromJson(json, RecentChats.class);
+        try {
+            if (!recentChats.getChats().isEmpty()) {
+                noChats = (TextView) findViewById(R.id.textView2);
+                noChats.setVisibility(View.INVISIBLE);
+                MyAdapter2 adapter2 = new MyAdapter2(this, recentChats.getChats());
+                list = (ListView) findViewById(R.id.list);
+                list.setAdapter(adapter2);
+                list.setSelection(adapter2.getCount() - 1);
+            }
+        }catch (Exception e){}
         if(pref.getBoolean("first_run",true)||pref.getString("userPhone",DEFAULT_PHONE_VALUE).equals(DEFAULT_PHONE_VALUE)) {
             Intent i = new Intent(this, MyTelephoneNumber.class);
             startActivityForResult(i, PHONE);

@@ -35,22 +35,17 @@
         android:layout_marginBottom="10dip"
         android:text="Messages:"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/result_network"
-        android:visibility="visible" />
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="383dp"
+        android:id="@+id/messageHistoryList" />
 
     <TextView
-        android:id="@+id/messageHistory"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:layout_weight="1.08"
-        android:background="#ffffff"
-        android:editable="true"
-        android:textIsSelectable="false"
-        android:textAlignment="viewStart" />
+        android:id="@+id/result_network"
+        android:visibility="invisible" />
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"

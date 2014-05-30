@@ -2,6 +2,7 @@ package com.radmas.example.radgram.app;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -14,8 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,6 +28,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,9 +43,8 @@ import de.greenrobot.event.EventBus;
 public class Chat extends ActionBarActivity implements com.radmas.example.radgram.app.HttpPost.NetworkListener, com.radmas.example.radgram.app.HttpRequest.NetworkListener{
 
     public TextView outputText;
-//    public int count=0;
     private EditText messageText;
-    private TextView messageHistoryText;
+    private ListView messageHistoryList;
     private Button sendMessageButton;
 
     TimerTask doAsynchronousTask;
@@ -55,9 +61,10 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
     private Database database;
     private ArrayList<Message> arrayMessagesAll= new ArrayList <Message> ();
     private ArrayList<Message> arrayMessagesThisChat =new ArrayList <Message> ();
+    private RecentChats recentChats =new RecentChats();
 
     @Override
-        protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.chat);
             tvIsConnected = (TextView) findViewById(R.id.tvIsConnected);
@@ -66,14 +73,19 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
             contactName = extras.getString("user");
             telephoneContact = extras.getString("telephone");
             myPhone = extras.getString("myPhone");
-
             database = new Database(myPhone,telephoneContact,myPhone+"_"+telephoneContact);
-
-            messageHistoryText = (TextView) findViewById(R.id.messageHistory);
+            messageHistoryList = (ListView) findViewById(R.id.messageHistoryList);
             messageText = (EditText) findViewById(R.id.message);
             messageText.requestFocus();
             sendMessageButton = (Button) findViewById(R.id.sendMessageButton);
             setTitle("Messaging with " + contactName);
+            recentChats.getChats().add(contactName);
+            Gson gson = new Gson();
+            String json = gson.toJson(recentChats);
+            SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString("Recent Chats",json);
+            editor.commit();
 
             // check if you are connected or not
             if(isConnected()){
@@ -130,16 +142,16 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
 //    }
 
     public void onEventMainThread(Conversation ev) {
-//      setArrayMessagesThisChat(ev.conversation);
-//      count = arrayMessagesAll.size();
         try {
             if (ev.getFirend_phone().equals(telephoneContact) && ev.getMy_phone().equals(myPhone)) {
-                messageHistoryText.setText("");
+                setArrayMessagesThisChat(ev.conversation);
                 for (Message message : ev.conversation) {
                     SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
                     String date = sdf.format(message.getTimeSent());
                     //comparar tiempos
-                    messageHistoryText.append(message.getUserTelephone() + " said: " + message.getText() + " at time: " + date + "\n");
+                    MyAdapter3 adapter3 = new MyAdapter3(this,ev,myPhone,contactName);
+                    messageHistoryList.setAdapter(adapter3);
+                    messageHistoryList.setSelection(adapter3.getCount()-1);
                 }
             }
         }catch (Exception e){
@@ -169,18 +181,14 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
         long unixTime = System.currentTimeMillis();
         if (messageText.getText().length() != 0) {
             Message message = new Message(messageText.getText().toString(), unixTime, myPhone);
-
-//          arrayMessagesAll.add(count, message);
-//            count++;
             messageText.setText("");
             Conversation conversation = new Conversation();
             arrayMessagesAll.add(message);
-            arrayMessagesThisChat.clear();
-            for(Message mess: arrayMessagesAll){
-                if(mess.getUserTelephone().equals(myPhone)){
-                    arrayMessagesThisChat.add(mess);
-                }
-            }
+            //for(Message mess: arrayMessagesAll){
+              //  if(mess.getUserTelephone().equals(myPhone)){
+            arrayMessagesThisChat.add(message);
+                //}
+            //}
             conversation.setConversation(arrayMessagesThisChat);
             conversation.setMy_phone(myPhone);
             conversation.setFirend_phone(telephoneContact);
@@ -212,24 +220,22 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
         if(result == null) {
             return;
         }
-
        rev= result;
        outputText = (TextView) findViewById(R.id.result_network);
        outputText.setText(rev);
-
     }
 
-        @Override
-        public boolean onCreateOptionsMenu(Menu menu) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
             super.onCreateOptionsMenu(menu);
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.main4, menu);
             return true; //true -> el menú ya está visible
-        }
+    }
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.action_search:
                     Log.i("ActionBar", "Search!");
@@ -243,15 +249,15 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
                 default:
                     return super.onOptionsItemSelected(item);
             }
-        }
+    }
 
-        public ArrayList<Message> getArrayMessagesAll(){
+    public ArrayList<Message> getArrayMessagesAll(){
             return arrayMessagesAll;
-        }
+    }
 
-        public void setArrayMessagesAll(ArrayList<Message> arrayMessages) {
+    public void setArrayMessagesAll(ArrayList<Message> arrayMessages) {
             this.arrayMessagesAll = arrayMessages;
-        }
+    }
 
     public void setArrayMessagesThisChat(ArrayList<Message> arrayMessagesThisChat) {
         this.arrayMessagesThisChat = arrayMessagesThisChat;
@@ -261,16 +267,16 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
 
             Intent i = new Intent (this, Contacts.class);
             startActivity(i);
-        }
+    }
 
-        public void launchActivitySettings (){
+    public void launchActivitySettings (){
             Intent i = new Intent (this, MisPreferencias.class);
             startActivity(i);
-        }
+    }
 
-        @Override
-        protected void onDestroy() {
+    @Override
+    protected void onDestroy() {
             super.onDestroy();
             EventBus.getDefault().unregister(this);
-        }
+    }
 }
