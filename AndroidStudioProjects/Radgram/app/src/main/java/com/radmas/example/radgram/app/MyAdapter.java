@@ -22,9 +22,9 @@ public class MyAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private String[][] names;
     private String [] tel_numbers;
-    private int[] images;
+    private int images;
 
-    public MyAdapter (Context context, String[][] names, String[] tel_num, int[] images){
+    public MyAdapter (Context context, String[][] names, String[] tel_num, int images){
         inflater=(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.names= names;
         this.tel_numbers = tel_num;
@@ -41,7 +41,7 @@ public class MyAdapter extends BaseAdapter {
        text.setText(names[position][0]);
        //imagenes del contacto
        ImageView image = (ImageView) recicledView.findViewById(R.id.foto);
-       image.setImageResource(images[position]);
+       image.setImageResource(images);
        //numeros de telefono
        TextView text2 = (TextView) recicledView.findViewById(R.id.telefono);
        text2.setText(names[position][1]);

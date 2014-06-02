@@ -27,7 +27,7 @@ public class Contacts extends ListActivity {
     public MyAdapter adapter;
     private String[][] nombres;
     private String[] telefonos;
-    private int[] imagenes;
+    private int imagenes;
     private int sizeCount;
     private String myPhone;
 
@@ -39,8 +39,8 @@ public class Contacts extends ListActivity {
         setContentView(R.layout.contacts);
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        imagenes[0]=R.drawable.ic_sent;
-        imagenes[1]=R.drawable.ic_sent;
+        imagenes= R.drawable.ic_launcher;
+        //imagenes[1]=R.drawable.ic_launcher;
         adapter = new MyAdapter(this,nombres,telefonos,imagenes);
         Bundle extras = this.getIntent().getExtras();
         myPhone= extras.getString("myPhone");
@@ -114,7 +114,7 @@ public class Contacts extends ListActivity {
         sizeCount=cursor.getCount();
         nombres= new String[sizeCount][sizeCount];
         telefonos =new String[sizeCount];
-        imagenes = new int[sizeCount];
+        //imagenes = new int[sizeCount];
         int j = 0;
         //StringBuffer output= new StringBuffer();
         // Loop for every contact in the phone

@@ -18,19 +18,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.gson.Gson;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,6 +55,7 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
     private ArrayList<Message> arrayMessagesAll= new ArrayList <Message> ();
     private ArrayList<Message> arrayMessagesThisChat =new ArrayList <Message> ();
     private RecentChats recentChats =new RecentChats();
+    private int position = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,12 +73,13 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
             messageText.requestFocus();
             sendMessageButton = (Button) findViewById(R.id.sendMessageButton);
             setTitle("Messaging with " + contactName);
-            recentChats.getChats().add(contactName);
+            recentChats.getChats().add(position,contactName);
+            position++;
             Gson gson = new Gson();
             String json = gson.toJson(recentChats);
             SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
             SharedPreferences.Editor editor = pref.edit();
-            editor.putString("Recent Chats",json);
+            editor.putString("Recent Chats", json);
             editor.commit();
 
             // check if you are connected or not
@@ -151,7 +146,7 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
                     //comparar tiempos
                     MyAdapter3 adapter3 = new MyAdapter3(this,ev,myPhone,contactName);
                     messageHistoryList.setAdapter(adapter3);
-                    messageHistoryList.setSelection(adapter3.getCount()-1);
+                    messageHistoryList.setSelection(adapter3.getCount() - 1);
                 }
             }
         }catch (Exception e){
@@ -192,6 +187,7 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
             conversation.setConversation(arrayMessagesThisChat);
             conversation.setMy_phone(myPhone);
             conversation.setFirend_phone(telephoneContact);
+            conversation.setContact_name(contactName);
             request2.setResultResponse(this.rev);
             request2.setConversation(conversation);
             request2.setDatabase(database);

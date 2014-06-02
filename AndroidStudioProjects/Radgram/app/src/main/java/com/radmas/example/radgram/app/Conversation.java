@@ -21,6 +21,8 @@ public class Conversation {
     String my_phone;
     @SerializedName("contact_Telephone")
     String firend_phone;
+    @SerializedName("contact_Name")
+    String contact_name;
     ArrayList<Message> conversation = new ArrayList<Message>();
 
 
@@ -72,6 +74,14 @@ public class Conversation {
 
     public void setConversation(ArrayList<Message> conversation) {
         this.conversation = conversation;
+    }
+
+    public String getContact_name() {
+        return contact_name;
+    }
+
+    public void setContact_name(String contact_name) {
+        this.contact_name = contact_name;
     }
 
     @Override

@@ -24,5 +24,7 @@
         android:text="Ok"
         android:id="@+id/button"
         android:layout_gravity="center_horizontal"
-        android:onClick="onClickTelephoneNumber" />
+        android:onClick="onClickTelephoneNumber"
+        android:enabled="true"
+        android:background="@drawable/abc_menu_dropdown_panel_holo_light" />
 </LinearLayout>

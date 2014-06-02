@@ -15,6 +15,6 @@
         android:layout_height="match_parent"
         android:text="You have no chats initialized"
         android:gravity="center"
-        android:visibility="invisible" />
+        android:visibility="visible" />
 
 </FrameLayout>
