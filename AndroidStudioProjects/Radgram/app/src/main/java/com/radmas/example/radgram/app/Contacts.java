@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,13 +24,14 @@ import android.widget.Toast;
 /**
  * Created by raddev01 on 19/03/14.
  */
-public class Contacts extends ListActivity {
+public class Contacts extends ActionBarActivity {
     public MyAdapter adapter;
     private String[][] nombres;
     private String[] telefonos;
     private int imagenes;
     private int sizeCount;
     private String myPhone;
+    private ListView list;
 
 
     @Override
@@ -37,18 +39,19 @@ public class Contacts extends ListActivity {
         fetchContacts();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contacts);
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+//        try {
+//            ActionBar actionBar = getActionBar();
+//            actionBar.setDisplayHomeAsUpEnabled(true);
+//        }catch(Exception e){}
         imagenes= R.drawable.ic_launcher;
         //imagenes[1]=R.drawable.ic_launcher;
         adapter = new MyAdapter(this,nombres,telefonos,imagenes);
         Bundle extras = this.getIntent().getExtras();
         myPhone= extras.getString("myPhone");
-        setListAdapter(adapter);
+        list = (ListView) findViewById(R.id.listView);
+        list.setAdapter(adapter);
 
-        ListView listView = getListView();
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> av, View view, int i, long l) {
                 String selected = ((TextView) view.findViewById(R.id.nombre)).getText().toString();
                 String telephone_selected = ((TextView) view.findViewById(R.id.telefono)).getText().toString();
@@ -112,7 +115,7 @@ public class Contacts extends ListActivity {
         ContentResolver contentResolver = getContentResolver();
         Cursor cursor = contentResolver.query(CONTENT_URI, null,null, null, null);
         sizeCount=cursor.getCount();
-        nombres= new String[sizeCount][sizeCount];
+        nombres= new String[sizeCount][sizeCount+1];
         telefonos =new String[sizeCount];
         //imagenes = new int[sizeCount];
         int j = 0;
@@ -131,9 +134,12 @@ public class Contacts extends ListActivity {
                     Cursor phoneCursor = contentResolver.query(PhoneCONTENT_URI, null, Phone_CONTACT_ID + " = ?", new String[] { contact_id }, null);
                     while (phoneCursor.moveToNext()) {
                         phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(NUMBER));
-                            nombres[j-1][1] = phoneNumber;
-                    }
-                    phoneCursor.close();
+                        if(sizeCount!=1){
+                           nombres[j-1][1] = phoneNumber;
+                        } else{
+                            nombres[0][1] = phoneNumber;
+                        }
+                    } phoneCursor.close();
                 }
             }
         }

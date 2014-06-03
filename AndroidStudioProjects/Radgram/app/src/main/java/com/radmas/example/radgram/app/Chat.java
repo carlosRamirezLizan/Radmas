@@ -67,7 +67,11 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
             contactName = extras.getString("user");
             telephoneContact = extras.getString("telephone");
             myPhone = extras.getString("myPhone");
-            database = new Database(myPhone,telephoneContact,myPhone+"_"+telephoneContact);
+            if(Integer.parseInt(myPhone)<Integer.parseInt(telephoneContact)) {
+                database = new Database(myPhone, telephoneContact, myPhone + "_" + telephoneContact);
+            }else{
+                database = new Database(myPhone,telephoneContact,telephoneContact+"_"+myPhone);
+            }
             messageHistoryList = (ListView) findViewById(R.id.messageHistoryList);
             messageText = (EditText) findViewById(R.id.message);
             messageText.requestFocus();
@@ -89,8 +93,10 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
             else{
                 tvIsConnected.setText("Offline");
             }
-            ActionBar actionBar = getActionBar();
-            actionBar.setDisplayHomeAsUpEnabled(true);
+//            try {
+//                ActionBar actionBar = getActionBar();
+//                actionBar.setDisplayHomeAsUpEnabled(true);
+//            }catch(Exception e){}
 
             //http post para crear el documento en base de datos en caso de que no exista
             try {
@@ -138,7 +144,7 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
 
     public void onEventMainThread(Conversation ev) {
         try {
-            if (ev.getFirend_phone().equals(telephoneContact) && ev.getMy_phone().equals(myPhone)) {
+            if ((ev.getFirend_phone().equals(telephoneContact)||ev.getFirend_phone().equals(myPhone)) && (ev.getMy_phone().equals(myPhone))||ev.getMy_phone().equals(telephoneContact)) {
                 setArrayMessagesThisChat(ev.conversation);
                 for (Message message : ev.conversation) {
                     SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");

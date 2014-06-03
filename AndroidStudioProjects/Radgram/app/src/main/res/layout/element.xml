@@ -7,19 +7,68 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:weightSum="1">
 
-    <FrameLayout
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.14">
+        android:background="@drawable/abc_cab_background_top_holo_light"
+        android:layout_weight="0.02">
+
+        <TextView
+            android:layout_width="313dp"
+            android:layout_height="wrap_content"
+            android:text="Time"
+            android:id="@+id/textView3"
+            android:paddingBottom="10dp"
+            android:paddingRight="10dp"
+            android:layout_gravity="right"
+            android:gravity="right"
+            android:layout_below="@+id/textView"
+            android:textSize="15dp" />
+
+        <TextView
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:text="Message"
+            android:id="@+id/textView2"
+            android:textSize="17dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:layout_above="@+id/textView3"
+            android:layout_toRightOf="@+id/textView" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Text"
+            android:text="Name"
             android:id="@+id/textView"
-            android:layout_weight="0.14"
-            android:layout_gravity="center"
-            android:textSize="20dp" />
-    </FrameLayout>
+            android:textSize="20dp"
+            android:layout_gravity="left|top"
+            android:paddingTop="10dp"
+            android:background="@drawable/abc_cab_background_top_holo_light"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingLeft="10dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button"
+            android:background="@drawable/abc_ic_go_search_api_holo_light"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/textView3"
+            android:onClick="sePulsa2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="contactTelephone"
+            android:id="@+id/textView4"
+            android:layout_alignBottom="@+id/button"
+            android:layout_toLeftOf="@+id/textView2"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
 
 </LinearLayout>

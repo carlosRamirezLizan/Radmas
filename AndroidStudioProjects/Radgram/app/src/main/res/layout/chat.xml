@@ -58,15 +58,17 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:gravity="top"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:paddingBottom="10dp" />
 
         <Button android:id="@+id/sendMessageButton"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="4"
             android:text="Send"
-            android:onClick="sePulsa"
-            android:background="@drawable/abc_menu_dropdown_panel_holo_light" />
+            android:background="@drawable/abc_menu_dropdown_panel_holo_light"
+            android:paddingBottom="10dp"
+            android:onClick="sePulsa" />
 
     </LinearLayout>
 
