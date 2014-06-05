@@ -1,7 +1,6 @@
 package com.radmas.example.radgram.app;
 
 
-import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,7 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.app.ActionBar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -44,7 +42,6 @@ public class Contacts extends ActionBarActivity {
 //            actionBar.setDisplayHomeAsUpEnabled(true);
 //        }catch(Exception e){}
         imagenes= R.drawable.ic_launcher;
-        //imagenes[1]=R.drawable.ic_launcher;
         adapter = new MyAdapter(this,nombres,telefonos,imagenes);
         Bundle extras = this.getIntent().getExtras();
         myPhone= extras.getString("myPhone");
@@ -117,9 +114,7 @@ public class Contacts extends ActionBarActivity {
         sizeCount=cursor.getCount();
         nombres= new String[sizeCount][sizeCount+1];
         telefonos =new String[sizeCount];
-        //imagenes = new int[sizeCount];
         int j = 0;
-        //StringBuffer output= new StringBuffer();
         // Loop for every contact in the phone
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {

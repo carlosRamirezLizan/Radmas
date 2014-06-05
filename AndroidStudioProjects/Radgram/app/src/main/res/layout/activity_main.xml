@@ -12,9 +12,10 @@
     <TextView
         android:id="@+id/textView2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="102dp"
         android:text="You have no chats initialized"
         android:gravity="center"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:layout_gravity="center_horizontal|bottom" />
 
 </FrameLayout>

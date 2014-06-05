@@ -27,6 +27,7 @@
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:name="com.radmas.example.radgram.app.Chat"
             android:parentActivityName="com.radmas.example.radgram.app.MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/action_chat" >
         </activity>
         <activity

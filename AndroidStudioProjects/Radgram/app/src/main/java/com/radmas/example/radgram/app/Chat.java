@@ -268,6 +268,7 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
     public void launchContacts (){
 
             Intent i = new Intent (this, Contacts.class);
+            i.putExtra("myPhone",myPhone);
             startActivity(i);
     }
 

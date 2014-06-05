@@ -22,8 +22,8 @@ public class HttpRequest extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... uri) {
-        String json = com.github.kevinsawicki.http.HttpRequest.get(uri[0]).body();
-        int code = com.github.kevinsawicki.http.HttpRequest.get(uri[0]).code();
+        String json = com.github.kevinsawicki.http.HttpRequest.get(uri[0]).connectTimeout(999999999).readTimeout(999999999).body();
+        int code = com.github.kevinsawicki.http.HttpRequest.get(uri[0]).connectTimeout(999999999).readTimeout(999999999).code();
         String no_valid = "Error al recibir la información";
         if (code == 200 ) {
             Gson gson = new GsonBuilder().create();

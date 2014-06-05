@@ -66,8 +66,16 @@
             android:text="contactTelephone"
             android:id="@+id/textView4"
             android:layout_alignBottom="@+id/button"
-            android:layout_toLeftOf="@+id/textView2"
             android:visibility="invisible" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="userTelephone"
+            android:id="@+id/textView5"
+            android:visibility="invisible"
+            android:layout_alignBottom="@+id/textView3"
+            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
 

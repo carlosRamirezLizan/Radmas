@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Handler;
 
 import de.greenrobot.event.EventBus;
 
@@ -43,13 +47,18 @@ public class MainActivity extends ActionBarActivity implements com.radmas.exampl
     private ArrayList<String> messages = new ArrayList<String>();
     private ArrayList<String> times = new ArrayList<String>();
     private ArrayList<String> phones = new ArrayList<String>();
+    private ArrayList<String> phones2 = new ArrayList<String>();
     private MyAdapter2 adapter2;
+    TimerTask doAsynchronousTask;
+    final android.os.Handler handler = new android.os.Handler();
+    Timer timer = new Timer();
+    private String userTelephone1;
+    private String userTelephone2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         EventBus.getDefault().register(this);
-        getDocuments();
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
         myPhone = pref.getString("userPhone", DEFAULT_PHONE_VALUE);
 
@@ -58,59 +67,66 @@ public class MainActivity extends ActionBarActivity implements com.radmas.exampl
             startActivityForResult(i, PHONE);
         }
         list = (ListView) findViewById(R.id.listChats);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> av, View view, int i, long l) {
-                String selected = ((TextView) view.findViewById(R.id.textView)).getText().toString();
-                String telephone_selected = ((TextView) view.findViewById(R.id.textView4)).getText().toString();
-                Toast toast=Toast.makeText(getApplicationContext(), selected+telephone_selected, Toast.LENGTH_SHORT);
-                toast.show();
-                Intent intent = new Intent(getApplicationContext(), Chat.class);
-                //nombre ususario
-                intent.putExtra("user",selected);
-                //telefono ususario
-                intent.putExtra("telephone",telephone_selected);
-                //mi telefono que ya esta bien puesto
-                intent.putExtra("myPhone",myPhone);
-                startActivity(intent);
+        doAsynchronousTask =  new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        getDocuments();
+                        Log.w("Last msg", messages.toString());
+                    }
+                });
             }
-        });
+        };timer.schedule(doAsynchronousTask, 0, 10000); //refresh every 10 seconds
     }
 
     public void sePulsa2(View view) {
-        Intent intent = new Intent(getApplicationContext(), Chat.class);
-        String selected = names.get(0);
-        String telephone_selected = phones.get(0);
-        intent.putExtra("user",selected);
-        intent.putExtra("telephone",telephone_selected);
-        intent.putExtra("myPhone",myPhone);
-        startActivity(intent);
+        list = (ListView) findViewById(R.id.listChats);
+        final int position = list.getPositionForView((RelativeLayout) view.getParent());
+        if (position >= 0) {
+            Intent intent = new Intent(getApplicationContext(), Chat.class);
+            View view1 = list.getAdapter().getView(position,(RelativeLayout)view.getParent(),(RelativeLayout)view.getParent());
+            String selected = ((TextView) view1.findViewById(R.id.textView)).getText().toString();
+            String telephone_selected = ((TextView) view1.findViewById(R.id.textView4)).getText().toString();
+            if(telephone_selected.equals(myPhone)){
+                telephone_selected = ((TextView) view1.findViewById(R.id.textView5)).getText().toString();
+            }
+            intent.putExtra("user",selected);
+            intent.putExtra("telephone",telephone_selected);
+            intent.putExtra("myPhone",myPhone);
+            startActivity(intent);
+        }
     }
+
 
     public void onEventMainThread(ChatsInitialized ev) {
-       if (!ev.get_total_rows().equals(0)) {
-          noChats = (TextView) findViewById(R.id.textView2);
-          noChats.setVisibility(View.INVISIBLE);
-          for(InfoDb infoDb: ev.getRows()){
-              ids.add(infoDb.getId());
-          }
-          getDocumentInformation(ids);
+        if (!ev.get_total_rows().equals(0)) {
+            noChats = (TextView) findViewById(R.id.textView2);
+            noChats.setVisibility(View.INVISIBLE);
+            for(InfoDb infoDb: ev.getRows()){
+                ids.add(infoDb.getId());
+            }
+            getDocumentInformation(ids);
 
-       }
+        }
     }
 
-    public void onEventMainThread(Conversation ev){
-        if(!names.contains(ev.getContact_name())) {
-            names.add(ev.getContact_name());
-            messages.add(ev.getConversation().get(ev.conversation.size()-1).getText());
-            SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
-            String date = sdf.format(ev.getConversation().get(ev.conversation.size()-1).getTimeSent());
-            times.add(date);
-            phones.add(ev.getFirend_phone());
+    public void onEventMainThread(Conversation ev) {
+        if (ev.getFirend_phone().equals(myPhone) || ev.getMy_phone().equals(myPhone)) {
+            if (!names.contains(ev.getContact_name())) {
+                names.add(ev.getContact_name());
+                messages.add(ev.getConversation().get(ev.conversation.size() - 1).getText());
+                SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
+                String date = sdf.format(ev.getConversation().get(ev.conversation.size() - 1).getTimeSent());
+                times.add(date);
+                phones.add(ev.getFirend_phone());
+                phones2.add(ev.getMy_phone());
+            }
+            //ultimo mensaje y hora
+            adapter2 = new MyAdapter2(this, names, messages, times, phones, phones2);
+            list = (ListView) findViewById(R.id.listChats);
+            list.setAdapter(adapter2);
         }
-        //ultimo mensaje y hora
-        adapter2 = new MyAdapter2(this, names,messages,times,phones);
-        list = (ListView) findViewById(R.id.listChats);
-        list.setAdapter(adapter2);
     }
 
     public void getDocumentInformation(ArrayList<String> ids){
@@ -164,7 +180,7 @@ public class MainActivity extends ActionBarActivity implements com.radmas.exampl
         super.onCreateOptionsMenu(menu);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
-        return true; /** true -> el menú ya está visible */
+        return true; /** true -> el menÃº ya estÃ¡ visible */
     }
 
     @Override
