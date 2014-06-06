@@ -138,10 +138,6 @@ public class Chat extends ActionBarActivity implements com.radmas.example.radgra
         request.execute(requested);
     }
 
-//    public void onEventMainThread(MyPhone ev) {
-//            myPhone = ev.getPhoneNumber();
-//    }
-
     public void onEventMainThread(Conversation ev) {
         try {
             if ((ev.getFirend_phone().equals(telephoneContact)||ev.getFirend_phone().equals(myPhone)) && (ev.getMy_phone().equals(myPhone))||ev.getMy_phone().equals(telephoneContact)) {

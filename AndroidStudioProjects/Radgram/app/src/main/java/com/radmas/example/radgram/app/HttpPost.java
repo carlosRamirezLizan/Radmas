@@ -59,16 +59,6 @@ public class HttpPost extends AsyncTask<String, Void, String> {
         Gson gson = new Gson();
         String json = gson.toJson(conversation);
 
-        /*
-        JSONObject json = new JSONObject();
-
-        try {
-            json.put("user_Telephone", this.userPhone);
-            json.put("contact_Telephone", this.contactPhone);
-            json.put("conversation",this.conversation);
-        }catch (JSONException e){}
-        */
-
         String last_rev = "1-db63d5463bf4d3064280690e18585786";
         if(resultResponse!=null){
             last_rev = resultResponse;

@@ -26,13 +26,6 @@ public class Conversation {
     ArrayList<Message> conversation = new ArrayList<Message>();
 
 
-
-/*
-   public Conversation (ArrayList<Message> arrayList){
-       this.arrayMessages = arrayList;
-   }
-*/
-
     public Conversation (){
     }
 
@@ -89,36 +82,6 @@ public class Conversation {
         return _id + " " + _rev;
     }
 
-    /*
-    public ArrayList<Message> getArrayMessages() {
-        return arrayMessages;
-    }
-
-    public Message[] getArray() {
-        return array;
-    }
-
-    public static void ordenar(Message lista[]){
-        //Usamos un bucle anidado
-        for(int i=0;i<(lista.length-1);i++){
-            for(int j=i+1;j<lista.length;j++){
-                Message message1 = lista[i];
-                Message message2 = lista[j];
-                if(message1.getTimeSent()>message2.getTimeSent()){
-                    //Intercambiamos valores
-                    Message variableAuxiliar=lista[i];
-                    lista[i]=lista[j];
-                    lista[j]=variableAuxiliar;
-                }
-            }
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "" +
-                 arrayMessages;
-    }*/
 }
 
 

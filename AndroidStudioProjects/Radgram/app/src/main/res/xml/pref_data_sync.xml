@@ -18,6 +18,12 @@
         android:summary="enviar los mensajes si pulsas enter"
         android:defaultValue="false"/>
 
+    <CheckBoxPreference
+        android:key="pref_key_enter"
+        android:title="enviar sin enter"
+        android:summary="enviar los mensajes si pulsas enter"
+        android:defaultValue="false"/>
+
     <!-- This preference simply launches an intent when selected. Use this UI sparingly, per
          design guidelines. -->
     <Preference android:title="@string/pref_title_system_sync_settings"

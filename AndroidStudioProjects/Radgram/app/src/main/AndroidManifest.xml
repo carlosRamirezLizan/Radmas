@@ -35,15 +35,6 @@
             android:label="@string/action_telephone_number" >
         </activity>
 
-        <activity android:name="com.radmas.example.radgram.app.SearchableActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
         <activity
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:name=".MisPreferencias"
