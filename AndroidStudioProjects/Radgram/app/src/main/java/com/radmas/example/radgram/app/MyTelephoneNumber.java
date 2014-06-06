@@ -27,6 +27,7 @@ public class MyTelephoneNumber extends Activity {
         myPhone.setPhoneNumber(telephone_num.getText().toString());
         //EventBus.getDefault().post(myPhone);
         if(telephone_num.getText().length()!=0) {
+
             Intent i = getIntent();
             i.putExtra("userPhone", myPhone.phoneNumber);
 

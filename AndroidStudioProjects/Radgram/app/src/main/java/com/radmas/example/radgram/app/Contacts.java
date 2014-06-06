@@ -52,7 +52,7 @@ public class Contacts extends ActionBarActivity {
             public void onItemClick(AdapterView<?> av, View view, int i, long l) {
                 String selected = ((TextView) view.findViewById(R.id.nombre)).getText().toString();
                 String telephone_selected = ((TextView) view.findViewById(R.id.telefono)).getText().toString();
-                Toast toast=Toast.makeText(getApplicationContext(), selected+telephone_selected, Toast.LENGTH_SHORT);
+                Toast toast=Toast.makeText(Contacts.this, selected+telephone_selected, Toast.LENGTH_SHORT);
                 toast.show();
                 Intent intent = new Intent(getApplicationContext(), Chat.class);
                 intent.putExtra("user",selected);
